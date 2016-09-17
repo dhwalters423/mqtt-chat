@@ -41,22 +41,24 @@ window.onkeydown = function (event) {
     }
   }
 };
-
-$("#connect-button").click(function() {
-  USERNAME = $("#username-input").val();
-  if (USERNAME == null || USERNAME == '') {
-    USERNAME = 'Anonymous';
-    $("#username-input").val('Anonymous');
-  }
-  BROKER_URL = $("#mqtt-broker").val();
-  if (BROKER_URL == null || BROKER_URL == '') {
-    $("#mqtt-chat").append('<span class="text-danger"> <span class="glyphicon glyphicon-remove-sign"></span>'
-      + '&nbsp&nbspCannot connect, no broker URL provided.'
-      + '</span><br>');
-  } else {
-    doConnect();
-  }
-});
+function setupConnectButton() {
+  $("#connect-button").click(function() {
+    USERNAME = $("#username-input").val();
+    if (USERNAME == null || USERNAME == '') {
+      USERNAME = 'Anonymous';
+      $("#username-input").val('Anonymous');
+    }
+    BROKER_URL = $("#mqtt-broker").val();
+    if (BROKER_URL == null || BROKER_URL == '') {
+      $("#mqtt-chat").append('<span class="text-danger"> <span class="glyphicon glyphicon-remove-sign"></span>'
+        + '&nbsp&nbspCannot connect, no broker URL provided.'
+        + '</span><br>');
+    } else {
+      doConnect();
+    }
+  });
+}
+setupConnectButton();
 
 function scrolledDown() {
   var element = $("#mqtt-chat");

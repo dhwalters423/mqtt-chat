@@ -2,10 +2,11 @@ var PORT = 9001;
 var client;
 // Create a client instance
 function doConnect() {
+  var clientID = "user" + USERNAME + new Date().getTime().toString(36);
   $("#mqtt-chat").append('<span class="text-warning"><span class="glyphicon glyphicon-warning-sign"></span>'
     + '&nbsp&nbspAttempting to connect to chat room broker...'
     + '</span><br>');
-  client = new Paho.MQTT.Client(BROKER_URL, Number(PORT), "clientID");
+  client = new Paho.MQTT.Client(BROKER_URL, Number(PORT), clientID);
 
   // set callback handlers
   client.connect({onSuccess:onConnect});
@@ -41,11 +42,16 @@ function onConnect() {
 
 // called when the client loses its connection
 function onConnectionLost(responseObject) {
+  CONNECTED = false;
   $("#mqtt-chat").append('<span class="text-danger"> <span class="glyphicon glyphicon-remove-sign"></span>'
     + '&nbsp&nbspConnection to '
     + BROKER_URL + ' has been lost! <br>'
     + responseObject.errorMessage
     + '</span><br>');
+    setupConnectButton();
+    $("#connect-button").removeClass();
+    $("#connect-button").addClass("btn btn-info");
+    $("#connect-button").html('Connect');
 }
 
 // called when a message arrives
