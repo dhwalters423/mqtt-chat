@@ -2,7 +2,9 @@ var PORT = 9001;
 var client;
 // Create a client instance
 function doConnect() {
-  console.log("Attempting to connect to broker.");
+  $("#mqtt-chat").append('<span class="text-warning"><span class="glyphicon glyphicon-warning-sign"></span>'
+  + '&nbsp&nbspAttempting to connect to chat room broker...'
+  + '</span><br>');
   client = new Paho.MQTT.Client(BROKER_URL, Number(PORT), "clientID");
 
   // set callback handlers
@@ -14,8 +16,10 @@ function doConnect() {
 
 // called when the client connects
 function onConnect() {
-  console.log("connected")
-  //display some connection messages.
+  $("#mqtt-chat").append('<span class="text-success"> <span class="glyphicon glyphicon-ok"></span>'
+  + '&nbsp&nbspSuccessfully connected to '
+  + BROKER_URL + ' on channel #' + CHANNEL + ' '
+  + '</span><br>');
 
   client.subscribe("/mqtt-chat/" + CHANNEL);
 
@@ -31,5 +35,5 @@ function onConnectionLost(responseObject) {
 
 // called when a message arrives
 function onMessageArrived(message) {
-  $("#mqtt-chat").append(message.payloadString + '<br>')
+  handleChatMessage(message);
 }

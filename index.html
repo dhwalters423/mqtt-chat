@@ -8,6 +8,7 @@
     <title>MQTT Chat - MQTT-based chat client</title>
 
     <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/custom.css" rel="stylesheet">
 
   </head>
 
@@ -24,11 +25,25 @@
         <div class="input-group">
           <input type="text" class="form-control" placeholder="broker.hostname.com" id="mqtt-broker">
           <span class="input-group-btn">
-            <button class="btn btn-default" type="button">Connect</button>
+            <button class="btn btn-primary" type="button">Connect</button>
           </span>
         </div><!-- /input-group -->
       </div>
-      <div id="mqtt-chat"></div>
+      <div id="mqtt-chat-window" class="chat-window">
+        <div class="chat-window-text col-xs-9" id="mqtt-chat">
+        </div>
+        <div class="user-sidepane col-xs-3" id="mqtt-users">
+          @dave
+        </div>
+      </div> <br>
+      <div class="form-group">
+        <div class="input-group">
+          <input type="text" class="form-control" placeholder="Write something..." id="chat-input">
+          <span class="input-group-btn">
+            <button class="btn btn-primary" type="button">Reply</button>
+          </span>
+        </div><!-- /input-group -->
+      </div>
 
     </div><!-- /.container -->
 

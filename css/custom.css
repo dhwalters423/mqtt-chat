@@ -1,0 +1,17 @@
+.chat-window {
+  border: 1px;
+  border-color: gray;
+  border-radius: 7px;
+  box-shadow: -2px 0 3px #ddd;
+  height: 60vh;
+}
+.chat-window-text {
+  overflow-y: auto;
+  overflow-x: auto;
+  height: 100%;
+}
+.user-sidepane {
+  height: 100%;
+  border-left: 1px solid #c3c3c3;
+  background-color: #f6f6f6;
+}
