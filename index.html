@@ -20,29 +20,58 @@
         <h1>MQTT Chat</h1>
         <p class="lead">A proof of concept around MQTT and text</p>
       </div><br>
-      <div class="form-group">
-        <label for="mqtt-broker"><strong>MQTT Broker</strong></label>
-        <div class="input-group">
-          <input type="text" class="form-control" placeholder="broker.hostname.com" id="mqtt-broker">
-          <span class="input-group-btn">
-            <button class="btn btn-primary" type="button">Connect</button>
-          </span>
-        </div><!-- /input-group -->
+      <div class="row">
+        <div class="col-md-2">
+          <div class="form-group">
+            <label for="mqtt-broker"><strong>MQTT Broker</strong></label>
+            <div class="input-group">
+              <input type="text" class="form-control" placeholder="broker.hostname.com" id="mqtt-broker">
+            </div><!-- /input-group -->
+          </div><!--/form group -->
+        </div>
+        <div class="col-md-2">
+          <div class="form-group">
+            <label for="username-input"><strong>Username</strong></label>
+            <div class="input-group">
+              <input type="text" class="form-control" placeholder="Anonymous" id="username-input">
+            </div><!-- /input-group -->
+          </div><!--/form group -->
+        </div>
+        <div class="col-md-2">
+          <div class="form-group">
+            <label for="channel-input"><strong>Channel</strong></label>
+            <div class="input-group">
+              <input type="text" class="form-control" placeholder="Not supported" id="channel-input" disabled>
+            </div><!-- /input-group -->
+          </div><!--/form group -->
+        </div>
+        <div class="col-md-2">
+          <div class="form-group">
+            <div class="input-group">
+              <br>
+              <button class="btn btn-info padding-fix" type="button" id="connect-button">Connect</button>
+            </div><!-- /input-group -->
+          </div><!--/form group -->
+        </div>
       </div>
-      <div id="mqtt-chat-window" class="chat-window">
-        <div class="chat-window-text col-xs-9" id="mqtt-chat">
+      <div class="row">
+        <div id="mqtt-chat-window" class="chat-window">
+          <div class="chat-window-text col-xs-9" id="mqtt-chat">
+          </div>
+          <div class="user-sidepane col-xs-3" id="mqtt-users">
+            There will be a list of users here once I figure out how to handle disconnects :)
+          </div>
         </div>
-        <div class="user-sidepane col-xs-3" id="mqtt-users">
-          @dave
+      </div><br>
+      <div class="row">
+        <div class="form-group">
+          <div class="input-group">
+            <input type="text" class="form-control" placeholder="Write something..." id="chat-input">
+            <span class="input-group-btn">
+              <button class="btn btn-primary" type="button" id="reply-button">Reply</button>
+            </span>
+          </div><!-- /input-group -->
         </div>
-      </div> <br>
-      <div class="form-group">
-        <div class="input-group">
-          <input type="text" class="form-control" placeholder="Write something..." id="chat-input">
-          <span class="input-group-btn">
-            <button class="btn btn-primary" type="button">Reply</button>
-          </span>
-        </div><!-- /input-group -->
       </div>
 
     </div><!-- /.container -->
