@@ -22,7 +22,13 @@ function doConnect() {
 function doDisconnect() {
   var msg = 'Disconnecting from ' + BROKER_URL + '...';
   sendMetaMessage("warning", msg);
+
+  var message = new Paho.MQTT.Message(USERNAME);
+  message.destinationName = PUBLISH_LEAVE_TOPIC;
+  client.send(message);
   client.disconnect();
+
+  $("#mqtt-users").empty();
 }
 
 // called when the client connects
@@ -31,7 +37,8 @@ function onConnect() {
   setupConnectButton();
 
   SUBSCRIBE_TOPIC = "/mqtt-chat/" + CHANNEL + "/#";
-  PUBLISH_ANNOUNCE_TOPIC = "/mqtt-chat/" + CHANNEL + "/new-user"
+  PUBLISH_JOIN_TOPIC = "/mqtt-chat/" + CHANNEL + "/join";
+  PUBLISH_LEAVE_TOPIC = "/mqtt-chat/" + CHANNEL + "/leave";
   PUBLISH_TOPIC = "/mqtt-chat/" + CHANNEL + "/" + USERNAME;
   CONNECTED = true;
 
@@ -41,7 +48,7 @@ function onConnect() {
   client.subscribe(SUBSCRIBE_TOPIC);
 
   var message = new Paho.MQTT.Message(USERNAME);
-  message.destinationName = PUBLISH_ANNOUNCE_TOPIC;
+  message.destinationName = PUBLISH_JOIN_TOPIC;
   client.send(message);
 
 }

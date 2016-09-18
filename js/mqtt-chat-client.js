@@ -5,7 +5,8 @@ var CHANNEL;
 var CONNECTED = false;
 var SUBSCRIBE_TOPIC;
 var PUBLISH_TOPIC;
-var PUBLISH_ANNOUNCE_TOPIC;
+var PUBLISH_JOIN_TOPIC;
+var PUBLISH_LEAVE_TOPIC;
 
 
 // Function to extract URL parameters.
@@ -118,6 +119,17 @@ function sanitize(string) {
   });
 }
 
+// Adds a user to the user list
+function addUser(user) {
+  $("#mqtt-users").append('<span class="text-info" id="' + sanitize(user) + '">'
+    + '<strong>@' + sanitize(user) + '</strong>'
+    + '</span><br>');
+}
+
+function removeUser(user) {
+  $("#" + sanitize(user)).remove();
+}
+
 // Handles an incoming MQTT chat message.
 function handleChatMessage(message) {
   var topicResArr = message.destinationName.split("/");
@@ -125,10 +137,17 @@ function handleChatMessage(message) {
   var msg = message.payloadString;
   var user;
 
-  if (topic == "new-user") {
+  if (topic == "join") {
     user = msg;
     var announceMsg = 'User <strong>@' + sanitize(user) + '</strong> has joined the channel.';
     sendMetaMessage("info", announceMsg);
+    addUser(user)
+  } else if (topic == "leave") {
+    user = msg;
+    var announceMsg = 'User <strong>@' + sanitize(user) + '</strong> has left the channel.';
+    sendMetaMessage("info", announceMsg);
+    removeUser(user);
+
   } else {
     user = topicResArr[3];
     $("#mqtt-chat").append(
@@ -183,9 +202,11 @@ $(document).ready(function() {
   USERNAME = $.urlParam("username");
   if (USERNAME != null) {
     $("#username-input").val(USERNAME);
-  }
-  if (USERNAME == null) {
+  } else {
     USERNAME = "Anonymous"
   }
   CHANNEL = "mqtt-chat-channel"; //Can be changed later for multiple channel support.
+  if (CHANNEL != null) {
+    $("#channel-input").val(CHANNEL);
+  }
 });
