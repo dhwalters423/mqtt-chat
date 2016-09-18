@@ -1,4 +1,5 @@
 var BROKER_URL;
+var PORT;
 var USERNAME;
 var CHANNEL;
 var CONNECTED = false;
@@ -46,22 +47,55 @@ window.onkeydown = function (event) {
 
 // Set up connect button.
 function setupConnectButton() {
-  $("#connect-button").click(function() {
-    USERNAME = $("#username-input").val();
-    if (USERNAME == null || USERNAME == '') {
-      USERNAME = 'Anonymous';
-      $("#username-input").val('Anonymous');
-    }
-    BROKER_URL = $("#mqtt-broker").val();
-    if (BROKER_URL == null || BROKER_URL == '') {
-      sendMetaMessage(sfsadfsadfsDF)
-    } else {
-      doConnect();
-    }
-  });
-}
 
-// Checks to see if the user has scrolled to the bottom of the chat pane,
+  if (!CONNECTED) {
+    $("#connect-button").unbind();
+    $("#connect-button").removeClass("btn-warning");
+    $("#connect-button").addClass("btn-info");
+    $("#connect-button").html('Connect');
+
+    $("#mqtt-broker").removeAttr("disabled");
+    $("#mqtt-port").removeAttr("disabled");
+    $("#username-input").removeAttr("disabled");
+
+    $("#connect-button").click(function() {
+      USERNAME = $("#username-input").val();
+      if (USERNAME == null || USERNAME == '') {
+        USERNAME = 'Anonymous';
+        $("#username-input").val('Anonymous');
+      }
+
+      var validated = true;
+      BROKER_URL = $("#mqtt-broker").val();
+      if (BROKER_URL == null || BROKER_URL == '') {
+        sendMetaMessage("danger", "No broker specified.");
+        validated = false;
+      }
+      PORT = $("#mqtt-port").val();
+      console.log(PORT);
+      if (PORT == null || isNaN(PORT) || PORT == '') {
+        sendMetaMessage("danger", "No port specified, or port is invalid.");
+        validated = false;
+      }
+
+      if (validated) {
+        doConnect();
+      }
+    });
+  } else {
+    $("#connect-button").unbind();
+    $("#connect-button").removeClass("btn-info");
+    $("#connect-button").addClass("btn-warning");
+    $("#connect-button").html('Disconnect');
+
+    $("#mqtt-broker").attr("disabled", "disabled");
+    $("#mqtt-port").attr("disabled", "disabled");
+    $("#username-input").attr("disabled", "disabled");
+
+    $("#connect-button").click(doDisconnect);
+  }
+}
+// see if the user has scrolled to the bottom of the chat pane,
 // if not, it will not auto scroll.
 function scrolledDown() {
   var element = $("#mqtt-chat");
@@ -128,7 +162,9 @@ function sendMetaMessage (context, msg) {
     $("#mqtt-chat").append('<span class="text-' + context + '">'
       + '&nbsp&nbsp' + msg + '</span><br>');
   }
-
+  if (scrolledDown("#mqtt-chat")) {
+     $("#mqtt-chat").animate({ scrollTop: $('#mqtt-chat')[0].scrollHeight}, 1000);
+  }
 }
 
 
@@ -139,6 +175,10 @@ $(document).ready(function() {
   BROKER_URL = $.urlParam("broker");
   if (BROKER_URL != null) {
     $("#mqtt-broker").val(BROKER_URL);
+  }
+  PORT = $.urlParam("port");
+  if (PORT != null) {
+    $("#mqtt-port").val(PORT);
   }
   USERNAME = $.urlParam("username");
   if (USERNAME != null) {

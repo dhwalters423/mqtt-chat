@@ -1,4 +1,3 @@
-var PORT = 9001;
 var client;
 
 // Create a client instance
@@ -11,20 +10,25 @@ function doConnect() {
   client = new Paho.MQTT.Client(BROKER_URL, Number(PORT), clientID);
 
   // set callback handlers
-  client.connect({onSuccess:onConnect});
+  client.connect({
+    onSuccess:onConnect,
+    onFailure:failedToConnect
+  });
   client.onConnectionLost = onConnectionLost;
   client.onMessageArrived = onMessageArrived;
 }
 
 
+function doDisconnect() {
+  var msg = 'Disconnecting from ' + BROKER_URL + '...';
+  sendMetaMessage("warning", msg);
+  client.disconnect();
+}
+
 // called when the client connects
 function onConnect() {
-  $("#connect-button").unbind();
-  $("#connect-button").removeClass("btn-info");
-  $("#connect-button").addClass("btn-success disabled");
-  $("#connect-button").html(
-    '<span class="glyphicon glyphicon-ok" aria-hidden="true"></span> Connected'
-  );
+  CONNECTED = true;
+  setupConnectButton();
 
   SUBSCRIBE_TOPIC = "/mqtt-chat/" + CHANNEL + "/#";
   PUBLISH_ANNOUNCE_TOPIC = "/mqtt-chat/" + CHANNEL + "/new-user"
@@ -39,6 +43,13 @@ function onConnect() {
   var message = new Paho.MQTT.Message(USERNAME);
   message.destinationName = PUBLISH_ANNOUNCE_TOPIC;
   client.send(message);
+
+}
+
+function failedToConnect(error) {
+  var msg = 'Failed to connect to ' + BROKER_URL + ':<br>'
+    + error.errorMessage;
+  sendMetaMessage("danger", msg);
 }
 
 // called when the client loses its connection
@@ -49,9 +60,6 @@ function onConnectionLost(responseObject) {
   sendMetaMessage ("danger", msg);
 
   setupConnectButton();
-  $("#connect-button").removeClass();
-  $("#connect-button").addClass("btn btn-info");
-  $("#connect-button").html('Connect');
 }
 
 // called when a message arrives

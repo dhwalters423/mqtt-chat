@@ -3,7 +3,7 @@
   border-color: gray;
   border-radius: 7px;
   box-shadow: -2px 0 3px #ddd;
-  height: 60vh;
+  height: 70vh;
 }
 .chat-window-text {
   overflow-y: auto;
