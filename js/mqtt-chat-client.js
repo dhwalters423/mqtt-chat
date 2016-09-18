@@ -6,6 +6,8 @@ var SUBSCRIBE_TOPIC;
 var PUBLISH_TOPIC;
 var PUBLISH_ANNOUNCE_TOPIC;
 
+
+// Function to extract URL parameters.
 $.urlParam = function(name){
   var results = new RegExp('[\?&]' + name + '=([^&#]*)').exec(window.location.href);
   if (results==null){
@@ -16,6 +18,7 @@ $.urlParam = function(name){
   }
 }
 
+// Handles sending a message to the broker.
 function sendChatMessage() {
   if (CONNECTED) {
     if ($("#chat-input").val().length > 0) {
@@ -25,12 +28,11 @@ function sendChatMessage() {
       $("#chat-input").val('');
     }
   } else {
-    $("#mqtt-chat").append('<span class="text-danger"> <span class="glyphicon glyphicon-remove-sign"></span>'
-    + '&nbsp&nbspCannot send message, not connected.'
-    + '</span><br>');
+    sendMetaMessage("danger", "Cannot send message, not connected.");
   }
 }
 
+// Set up reply button.
 $("#reply-button").click(sendChatMessage);
 window.onkeydown = function (event) {
   var code = event.keyCode ? event.keyCode : event.which;
@@ -41,6 +43,8 @@ window.onkeydown = function (event) {
     }
   }
 };
+
+// Set up connect button.
 function setupConnectButton() {
   $("#connect-button").click(function() {
     USERNAME = $("#username-input").val();
@@ -50,20 +54,22 @@ function setupConnectButton() {
     }
     BROKER_URL = $("#mqtt-broker").val();
     if (BROKER_URL == null || BROKER_URL == '') {
-      $("#mqtt-chat").append('<span class="text-danger"> <span class="glyphicon glyphicon-remove-sign"></span>'
-        + '&nbsp&nbspCannot connect, no broker URL provided.'
-        + '</span><br>');
+      sendMetaMessage(sfsadfsadfsDF)
     } else {
       doConnect();
     }
   });
 }
-setupConnectButton();
 
+// Checks to see if the user has scrolled to the bottom of the chat pane,
+// if not, it will not auto scroll.
 function scrolledDown() {
   var element = $("#mqtt-chat");
   return (element[0].scrollHeight - element.scrollTop()) % element.outerHeight() < 20;
 }
+
+// Ensures no HTML or JS script injection can occur by escaping all html characters.
+// Probably should be expanded.
 function sanitize(string) {
   var entityMap = {
     "&": "&amp;",
@@ -77,17 +83,18 @@ function sanitize(string) {
     return entityMap[c];
   });
 }
+
+// Handles an incoming MQTT chat message.
 function handleChatMessage(message) {
   var topicResArr = message.destinationName.split("/");
   var topic = topicResArr[3];
   var msg = message.payloadString;
   var user;
+
   if (topic == "new-user") {
     user = msg;
-    $("#mqtt-chat").append(
-      '<span class="text-info">User <strong>@' + sanitize(user) + '</strong> has joined the channel!</span>'
-      + '<br>'
-    );
+    var announceMsg = 'User <strong>@' + user + '</strong> has joined the channel.';
+    sendMetaMessage("info", announceMsg);
   } else {
     user = topicResArr[3];
     $("#mqtt-chat").append(
@@ -96,12 +103,39 @@ function handleChatMessage(message) {
       + '<br>'
     );
   }
+
   if (scrolledDown("#mqtt-chat")) {
      $("#mqtt-chat").animate({ scrollTop: $('#mqtt-chat')[0].scrollHeight}, 1000);
   }
 }
 
+// Builds and appends a meta chat message (error, info, or warning messages)
+function sendMetaMessage (context, msg) {
+  var glyphicon;
+  switch (context) {
+    case "danger" : glyphicon = "glyphicon-remove-sign"; break;
+    case "warning" : glyphicon = "glyphicon-warning-sign"; break;
+    case "success" : glyphicon = "glyphicon-ok"; break;
+    case "info" : glyphicon = "none"; break;
+  }
+
+  if (glyphicon != "none") {
+    $("#mqtt-chat").append('<span class="text-' + context +'">'
+      + '<span class="glyphicon ' + glyphicon + '"></span>'
+      + '&nbsp&nbsp' + msg
+      + '</span><br>');
+  } else {
+    $("#mqtt-chat").append('<span class="text-' + context + '">'
+      + '&nbsp&nbsp' + msg + '</span><br>');
+  }
+
+}
+
+
+
 $(document).ready(function() {
+
+  setupConnectButton();
   BROKER_URL = $.urlParam("broker");
   if (BROKER_URL != null) {
     $("#mqtt-broker").val(BROKER_URL);
