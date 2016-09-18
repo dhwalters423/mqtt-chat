@@ -127,7 +127,7 @@ function handleChatMessage(message) {
 
   if (topic == "new-user") {
     user = msg;
-    var announceMsg = 'User <strong>@' + user + '</strong> has joined the channel.';
+    var announceMsg = 'User <strong>@' + sanitize(user) + '</strong> has joined the channel.';
     sendMetaMessage("info", announceMsg);
   } else {
     user = topicResArr[3];
