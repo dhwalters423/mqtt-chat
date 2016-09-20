@@ -3,11 +3,8 @@ var PORT;
 var USERNAME;
 var CHANNEL;
 var CONNECTED = false;
-var SUBSCRIBE_TOPIC;
-var PUBLISH_TOPIC;
-var PUBLISH_JOIN_TOPIC;
-var PUBLISH_LEAVE_TOPIC;
 
+var users = [];
 
 // Function to extract URL parameters.
 $.urlParam = function(name){
@@ -73,7 +70,6 @@ function setupConnectButton() {
         validated = false;
       }
       PORT = $("#mqtt-port").val();
-      console.log(PORT);
       if (PORT == null || isNaN(PORT) || PORT == '') {
         sendMetaMessage("danger", "No port specified, or port is invalid.");
         validated = false;
@@ -119,47 +115,62 @@ function sanitize(string) {
   });
 }
 
+function updateUserListUI (){
+  $("#mqtt-users").empty();
+  users.sort();
+  users.forEach(function(user){
+    $("#mqtt-users").append('<span class="text-info" id="' + sanitize(user) + '">'
+      + '<strong>@' + sanitize(user) + '</strong>'
+      + '</span><br>');
+    });
+}
 // Adds a user to the user list
 function addUser(user) {
-  $("#mqtt-users").append('<span class="text-info" id="' + sanitize(user) + '">'
-    + '<strong>@' + sanitize(user) + '</strong>'
-    + '</span><br>');
+  users.push(user);
+  updateUserListUI();
 }
-
+function removeFromUserList(user) {
+  var index = users.indexOf(user);
+  if (index !== -1) {
+      users.splice(index, 1);
+  }
+}
 function removeUser(user) {
-  $("#" + sanitize(user)).remove();
+  removeFromUserList(user);
+  updateUserListUI();
 }
 
 // Handles an incoming MQTT chat message.
 function handleChatMessage(message) {
   var topicResArr = message.destinationName.split("/");
-  var topic = topicResArr[3];
+  var topic = topicResArr[4];
   var msg = message.payloadString;
   var user;
 
-  if (topic == "join") {
-    user = msg;
-    var announceMsg = 'User <strong>@' + sanitize(user) + '</strong> has joined the channel.';
-    sendMetaMessage("info", announceMsg);
-    addUser(user)
-  } else if (topic == "leave") {
-    user = msg;
-    var announceMsg = 'User <strong>@' + sanitize(user) + '</strong> has left the channel.';
-    sendMetaMessage("info", announceMsg);
-    removeUser(user);
-
-  } else {
-    user = topicResArr[3];
-    $("#mqtt-chat").append(
-      '<strong><span class="text-info">@' + sanitize(user) + '</strong></span>'
-      + '&nbsp' + sanitize(msg)
-      + '<br>'
-    );
-  }
+  user = topicResArr[4];
+  $("#mqtt-chat").append(
+    '<strong><span class="text-info">@' + sanitize(user) + '</strong></span>'
+    + '&nbsp' + sanitize(msg)
+    + '<br>'
+  );
 
   if (scrolledDown("#mqtt-chat")) {
      $("#mqtt-chat").animate({ scrollTop: $('#mqtt-chat')[0].scrollHeight}, 1000);
   }
+}
+
+function handleUserMessage(message) {
+  var topicResArr = message.destinationName.split("/");
+  var user = topicResArr[4];
+  var announceMsg;
+  if (message.payloadBytes.length == 0) {
+    announceMsg = 'User <strong>@' + sanitize(user) + '</strong> has left the channel.';
+    removeUser(user);
+  } else {
+    announceMsg = 'User <strong>@' + sanitize(user) + '</strong> has joined the channel.';
+    addUser(user)
+  }
+  sendMetaMessage("info", announceMsg);
 }
 
 // Builds and appends a meta chat message (error, info, or warning messages)
