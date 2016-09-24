@@ -16,7 +16,7 @@ The goal of mqtt-chat is to see how far a pure, MQTT-based chat client can go. M
 - Idea for a new feature? Just make an Issue request, or better yet- submit a pull request!
 
 # Can I use mqtt-chat in my project?
-Of course! Just clone the project into your public facing server, hook in a .
+Of course! Just clone the project into your public facing server, hook in an MQTT broker, and use it however you want.
 
 # How do I set up an MQTT broker?
 I recommend using Mosquitto, it's open source and easy to set up. Follow the official Mosquitto documentation here: http://www.eclipse.org/mosquitto/download/
