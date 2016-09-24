@@ -3,6 +3,8 @@ var PORT;
 var USERNAME;
 var CHANNEL;
 var CONNECTED = false;
+var sentMessages = 0;
+var sentTooManyMsgsWarning = false;
 
 var users = [];
 
@@ -12,7 +14,7 @@ $.urlParam = function(name){
   if (results==null){
      return null;
   }
-  else{
+  else {
      return results[1] || 0;
   }
 }
@@ -20,11 +22,23 @@ $.urlParam = function(name){
 // Handles sending a message to the broker.
 function sendChatMessage() {
   if (CONNECTED) {
+
+    if (sentMessages > 1) {
+      sendMetaMessage("danger", "You are sending too many messages. Please wait...");
+      return;
+    }
+
     if ($("#chat-input").val().length > 0) {
       var message = new Paho.MQTT.Message($("#chat-input").val());
       message.destinationName = PUBLISH_TOPIC;
       client.send(message);
       $("#chat-input").val('');
+
+      // Can only send one message a second.
+      sentMessages++;
+      setTimeout(function() {
+        sentMessages = 0;
+      }, 1500);
     }
   } else {
     sendMetaMessage("danger", "Cannot send message, not connected.");
