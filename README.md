@@ -24,4 +24,4 @@ I recommend using Mosquitto, it's open source and easy to set up. Follow the off
 If you're using Debian Wheezy, fair warning- Websockets are not enabled when installing mosquitto using the apt package manager. For more information, here is a great blog post on how to manually install Mosquitto: http://www.xappsoftware.com/wordpress/2015/05/18/six-steps-to-install-mosquitto-1-4-2-with-websockets-on-debian-wheezy/comment-page-1/
 
 # Is there a live demo?
-Check out a live demo here: http://vps317831.ovh.net/mqtt-chat/index.html?broker=vps317831.ovh.net&port=9001
+Check out a live demo here: http://vps317831.ovh.net/mqtt-chat/index.html?broker=vps317831.ovh.net&port=9001.
